@@ -24,7 +24,8 @@ const corsOrigins = process.env.CORS_ORIGIN
 
 app.use(cors({
   origin: corsOrigins,
-  methods: ["GET", "POST"],
+  methods: ["GET", "POST", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "x-room-id"],
   credentials: true
 }));
 
@@ -40,7 +41,8 @@ app.use('/uploads', express.static(uploadsDir));
 const io = new Server(server, {
   cors: {
     origin: corsOrigins,
-    methods: ["GET", "POST"],
+    methods: ["GET", "POST", "OPTIONS"],
+    allowedHeaders: ["x-room-id"],
     credentials: true
   }
 });
