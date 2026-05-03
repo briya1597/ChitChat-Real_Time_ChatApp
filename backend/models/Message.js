@@ -20,11 +20,6 @@ const messageSchema = new mongoose.Schema({
   fileType: {
     type: String,
     default: null
-  },
-  createdAt: {
-    type: String,
-    required: true
-  }
-}, { timestamps: true });
+  }}, { timestamps: true });
 
 module.exports = mongoose.model('Message', messageSchema);

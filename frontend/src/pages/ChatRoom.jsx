@@ -57,15 +57,23 @@ export default function ChatRoom() {
       return;
     }
 
-    const newSocket = io(config.SOCKET_URL);
+    const newSocket = io(config.SOCKET_URL, {
+      transports: ['polling', 'websocket'],
+      reconnectionAttempts: 5
+    });
     setSocket(newSocket);
     
     newSocket.on('connect', () => {
+      setIsConnected(true);
       newSocket.emit('join_room', { 
         roomId, 
         userName: location.state.userName,
         creatorSessionId: localStorage.getItem(`creator_${roomId}`)
       });
+    });
+
+    newSocket.on('disconnect', () => {
+      setIsConnected(false);
     });
 
     newSocket.on('room_history', (history) => {
@@ -131,12 +139,13 @@ export default function ChatRoom() {
     e.preventDefault();
     if (!newMessage.trim() || !socket) return;
 
-    socket.emit('send_message', {
+    const data = {
       roomId,
       senderName: location.state.userName,
       text: newMessage
-    });
+    };
 
+    socket.emit('send_message', data);
     setNewMessage('');
   };
 
@@ -215,59 +224,60 @@ export default function ChatRoom() {
       <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-primary/20 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-5%] w-[40%] h-[40%] bg-rose-500/10 rounded-full blur-[100px] pointer-events-none" />
       
-      {/* Header */}
-      <header className="px-6 py-4 border-b border-white/5 bg-surface/50 backdrop-blur-xl flex justify-between items-center z-10 sticky top-0 shrink-0">
-        <div className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-primary/20 text-primary flex items-center justify-center border border-primary/30 shadow-lg shadow-primary/20">
-            <Shield size={20} className="drop-shadow-md" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h2 className="font-semibold text-lg text-slate-100 tracking-tight">Secure Room</h2>
-              <span className="w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(251,113,133,0.8)] animate-pulse" />
+      <header className="border-b border-white/5 bg-surface/50 backdrop-blur-xl z-20 sticky top-0 shrink-0">
+        <div className="max-w-7xl mx-auto w-full px-6 py-4 flex justify-between items-center">
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 rounded-xl bg-primary/20 text-primary flex items-center justify-center border border-primary/30 shadow-lg shadow-primary/20">
+              <Shield size={20} className="drop-shadow-md" />
             </div>
-            <div className="flex items-center gap-3 text-xs font-medium text-slate-400">
-              <span className="font-mono bg-white/5 px-1.5 py-0.5 rounded border border-white/10">ID: {roomId}</span>
-              <span className="flex items-center gap-1 opacity-70"><Clock size={12}/> Disposes 30m after empty</span>
-              {isLocked && <span className="flex items-center gap-1 text-rose-400 opacity-90"><Lock size={12}/> Locked</span>}
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="font-semibold text-lg text-white tracking-tight leading-none">VapourChat</h2>
+                <span className={`w-2 h-2 rounded-full ${isConnected ? 'bg-rose-500 shadow-[0_0_8px_rgba(251,113,133,0.8)]' : 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]'} animate-pulse`} />
+              </div>
+              <div className="flex items-center gap-3 text-xs font-medium text-slate-400 mt-1">
+                <span className="font-mono bg-white/10 px-1.5 py-0.5 rounded border border-white/10 opacity-80 uppercase leading-none">ID: {roomId}</span>
+                <span className="flex items-center gap-1 opacity-70"><Clock size={12}/> Disposes 30m after empty</span>
+                {isLocked && <span className="flex items-center gap-1 text-rose-400 opacity-90"><Lock size={12}/> Locked</span>}
+              </div>
             </div>
           </div>
-        </div>
-        
-        <div className="flex items-center gap-3">
-          <button 
-            onClick={() => setShowUsers(!showUsers)}
-            className="flex items-center gap-2 px-3 py-2 rounded-xl text-slate-300 hover:bg-white/5 border border-white/10 transition-all text-sm font-medium relative"
-          >
-            <User size={16} />
-            <span className="hidden sm:block">People</span>
-            {roomUsers.length > 0 && (
-              <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary text-[10px] flex items-center justify-center rounded-full text-white border border-background">
-                {roomUsers.length}
-              </span>
-            )}
-          </button>
           
-          {isCreator && (
+          <div className="flex items-center gap-3">
             <button 
-              onClick={handleToggleLock}
-              className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-300 border ${
-                isLocked 
-                  ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20' 
-                  : 'bg-rose-500/10 text-rose-400 border-rose-500/20 hover:bg-rose-500/20'
-              }`}
+              onClick={() => setShowUsers(!showUsers)}
+              className="flex items-center gap-2 px-3 py-2 rounded-xl text-slate-300 hover:bg-white/5 border border-white/10 transition-all text-sm font-medium relative"
             >
-              {isLocked ? <Unlock size={16} /> : <Lock size={16} />}
-              {isLocked ? 'Unlock Room' : 'Lock Room'}
+              <User size={16} />
+              <span className="hidden sm:block">People</span>
+              {roomUsers.length > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary text-[10px] flex items-center justify-center rounded-full text-white border border-background">
+                  {roomUsers.length}
+                </span>
+              )}
             </button>
-          )}
-          <button 
-            onClick={() => navigate('/')}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 transition-all duration-300 text-sm font-medium"
-          >
-            <LogOut size={16} />
-            <span className="hidden sm:block">Leave</span>
-          </button>
+            
+            {isCreator && (
+              <button 
+                onClick={handleToggleLock}
+                className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-300 border ${
+                  isLocked 
+                    ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20' 
+                    : 'bg-rose-500/10 text-rose-400 border-rose-500/20 hover:bg-rose-500/20'
+                }`}
+              >
+                {isLocked ? <Unlock size={16} /> : <Lock size={16} />}
+                {isLocked ? 'Unlock Room' : 'Lock Room'}
+              </button>
+            )}
+            <button 
+              onClick={() => navigate('/')}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 transition-all duration-300 text-sm font-medium"
+            >
+              <LogOut size={16} />
+              <span className="hidden sm:block">Leave</span>
+            </button>
+          </div>
         </div>
       </header>
 
@@ -328,17 +338,28 @@ export default function ChatRoom() {
       )}
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-6 z-10 scrollbar-thin scrollbar-thumb-surface scrollbar-track-transparent">
-        <div className="max-w-4xl mx-auto space-y-6">
+      <div className={`flex-1 overflow-y-auto p-6 z-10 scrollbar-thin scrollbar-thumb-surface scrollbar-track-transparent flex flex-col ${messages.length === 0 ? 'justify-center' : ''}`}>
+        <div className="max-w-4xl w-full mx-auto space-y-6">
           {/* Welcome Message */}
           <div className="flex justify-center mb-8">
-            <div className="bg-primary/10 border border-primary/20 rounded-2xl px-6 py-4 text-center max-w-sm backdrop-blur-sm">
-              <MessageCircle size={32} className="mx-auto text-primary mb-2 opacity-80" />
-              <p className="text-sm font-medium text-slate-300">Welcome, {location.state.userName}!</p>
-              <p className="text-xs text-slate-400 mt-1">Messages are ephemeral. Room is protected.</p>
-              <p className="text-xs text-primary mt-3 flex justify-center items-center gap-1 font-medium bg-primary/10 w-fit mx-auto px-4 py-2 rounded-full border border-primary/20 shadow-sm flex-wrap text-center">
-                <Zap size={14}/> Type <b>@AI</b> to summon ChitChat AI | <b>@Image</b> to generate art
-              </p>
+            <div className="bg-primary/10 border border-primary/20 rounded-3xl px-8 py-10 text-center max-w-lg backdrop-blur-md shadow-xl">
+              <div className="w-16 h-16 bg-primary/20 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-primary/30">
+                <MessageCircle size={32} className="text-primary" />
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-2 tracking-tight">Welcome, {location.state.userName}!</h3>
+              <p className="text-slate-400 mb-6 text-sm">Your secure ephemeral space is ready.</p>
+              
+              <div className="flex flex-col gap-3 max-w-xs mx-auto">
+                <p className="text-[10px] text-primary font-bold uppercase tracking-[0.2em] mb-1">Capabilities</p>
+                <div className="flex items-center gap-3 bg-white/5 p-3 rounded-xl border border-white/10 text-xs text-slate-300">
+                  <Zap size={14} className="text-primary shrink-0"/>
+                  <span>Type <b>@AI</b> for instant answers</span>
+                </div>
+                <div className="flex items-center gap-3 bg-white/5 p-3 rounded-xl border border-white/10 text-xs text-slate-300">
+                  <Zap size={14} className="text-rose-400 shrink-0"/>
+                  <span>Type <b>@Image</b> for AI art</span>
+                </div>
+              </div>
             </div>
           </div>
 
