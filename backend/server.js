@@ -29,6 +29,21 @@ app.use(cors({
 
 app.use(express.json());
 
+// Database Connection Watchdog
+app.use((req, res, next) => {
+  // Use originalUrl to catch /api even when mounted on sub-routes
+  if (req.originalUrl.includes('/api') && mongoose.connection.readyState !== 1) {
+    console.log(`[WATCHDOG] Rejecting ${req.method} ${req.originalUrl} - DB State: ${mongoose.connection.readyState}`);
+    return res.status(503).json({ 
+      error: 'Backend is online, but Database is NOT connected.',
+      details: 'Check your Render MONGODB_URI and Atlas Network Access.',
+      status: mongoose.connection.readyState,
+      state: mongoose.connection.readyState === 2 ? 'Connecting...' : 'Disconnected'
+    });
+  }
+  next();
+});
+
 // Expose the temporary uploads directory statically to serve rich media natively
 const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) {
