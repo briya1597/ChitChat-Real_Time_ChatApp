@@ -31,7 +31,7 @@ export default function LandingPage() {
         // Persist administrative privileges across tab refreshes and browser restarts
         localStorage.setItem(`creator_${data.roomId}`, data.creatorSessionId);
       } else {
-        alert(data.error || 'Error creating room');
+        alert(`${data.error}${data.details ? ': ' + data.details : ''}`);
       }
     } catch (err) {
       console.error(err);

@@ -18,9 +18,11 @@ const app = express();
 const server = http.createServer(app);
 
 // Dynamic CORS configuration allowing production frontend and local development
-// NUCLEAR CORS: Allow any origin for troubleshooting
+// Production-grade CORS configuration
+const corsOrigins = ["https://vapourchat.vercel.app", "http://localhost:5173", "http://127.0.0.1:5173"];
+
 app.use(cors({
-  origin: true,
+  origin: corsOrigins,
   methods: ["GET", "POST", "OPTIONS"],
   allowedHeaders: ["Content-Type", "x-room-id"]
 }));
@@ -36,7 +38,7 @@ app.use('/uploads', express.static(uploadsDir));
 
 const io = new Server(server, {
   cors: {
-    origin: true,
+    origin: corsOrigins,
     methods: ["GET", "POST", "OPTIONS"],
     allowedHeaders: ["x-room-id"]
   }

@@ -18,7 +18,12 @@ exports.createRoom = async (req, res) => {
     // Pass creatorSessionId back elegantly alongside standard details
     res.status(201).json({ roomId, passkey, creatorSessionId });
   } catch (err) {
-    res.status(500).json({ error: 'Failed to create room' });
+    console.error('Room Creation Error:', err);
+    res.status(500).json({ 
+      error: 'Failed to create room', 
+      details: err.message,
+      stack: process.env.NODE_ENV === 'development' ? err.stack : undefined 
+    });
   }
 };
 
