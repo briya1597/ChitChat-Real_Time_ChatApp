@@ -213,6 +213,7 @@ export default function ChatRoom() {
     <div className="flex flex-col h-screen bg-background relative overflow-hidden">
       {/* Background gradients */}
       <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-primary/20 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-5%] w-[40%] h-[40%] bg-rose-500/10 rounded-full blur-[100px] pointer-events-none" />
       
       {/* Header */}
       <header className="px-6 py-4 border-b border-white/5 bg-surface/50 backdrop-blur-xl flex justify-between items-center z-10 sticky top-0 shrink-0">
@@ -223,7 +224,7 @@ export default function ChatRoom() {
           <div>
             <div className="flex items-center gap-2">
               <h2 className="font-semibold text-lg text-slate-100 tracking-tight">Secure Room</h2>
-              <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)] animate-pulse" />
+              <span className="w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(251,113,133,0.8)] animate-pulse" />
             </div>
             <div className="flex items-center gap-3 text-xs font-medium text-slate-400">
               <span className="font-mono bg-white/5 px-1.5 py-0.5 rounded border border-white/10">ID: {roomId}</span>
@@ -364,7 +365,7 @@ export default function ChatRoom() {
               : 'bg-surface border border-white/10 text-slate-200 rounded-bl-sm shadow-black/20';
 
             if (isAI) {
-              bubbleClass = 'bg-gradient-to-r from-indigo-500 to-purple-600 border border-indigo-400/50 text-white rounded-bl-sm shadow-purple-500/25 shadow-lg relative overflow-hidden';
+              bubbleClass = 'bg-gradient-to-r from-violet-600 to-rose-600 border border-violet-400/50 text-white rounded-bl-sm shadow-rose-500/25 shadow-lg relative overflow-hidden';
             }
 
             // Message Formatting Blocks natively handling Video, Images, Audio bindings
@@ -433,7 +434,7 @@ export default function ChatRoom() {
               animate={{ opacity: 1, y: 0 }}
               className="flex justify-start w-full relative group"
             >
-              <div className="max-w-[85%] sm:max-w-[75%] px-5 py-3 rounded-2xl shadow-lg leading-relaxed bg-gradient-to-r from-indigo-500 to-purple-600 border border-indigo-400/50 text-white rounded-bl-sm shadow-purple-500/25 relative overflow-hidden animate-pulse opacity-80">
+              <div className="max-w-[85%] sm:max-w-[75%] px-5 py-3 rounded-2xl shadow-lg leading-relaxed bg-gradient-to-r from-violet-600 to-rose-600 border border-violet-400/50 text-white rounded-bl-sm shadow-rose-500/25 relative overflow-hidden animate-pulse opacity-80">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl pointer-events-none" />
                 <span className="relative z-10 w-full">
                    <span className="flex items-center gap-3 font-medium tracking-wide">
@@ -487,7 +488,7 @@ export default function ChatRoom() {
       {/* Background decorations */}
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none -z-10 opacity-30">
         <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[100px]" />
-        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[100px]" />
+        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-rose-500/10 rounded-full blur-[100px]" />
       </div>
     </div>
   );

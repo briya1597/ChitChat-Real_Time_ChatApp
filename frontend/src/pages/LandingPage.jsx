@@ -69,7 +69,7 @@ export default function LandingPage() {
         <div className="flex justify-center mb-4 text-primary">
           <MessageSquare size={64} />
         </div>
-        <h1 className="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-400 mb-4 tracking-tight">
+        <h1 className="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-rose-400 mb-4 tracking-tight">
           ChitChat
         </h1>
         <p className="text-textSecondary text-xl max-w-lg mx-auto">
@@ -226,7 +226,7 @@ export default function LandingPage() {
 
       {/* Decorative blurred background elements */}
       <div className="fixed top-1/4 -left-32 w-96 h-96 bg-primary/20 rounded-full blur-[128px] -z-10 pointer-events-none" />
-      <div className="fixed bottom-1/4 -right-32 w-96 h-96 bg-purple-500/20 rounded-full blur-[128px] -z-10 pointer-events-none" />
+      <div className="fixed bottom-1/4 -right-32 w-96 h-96 bg-rose-500/20 rounded-full blur-[128px] -z-10 pointer-events-none" />
     </div>
   );
 }
