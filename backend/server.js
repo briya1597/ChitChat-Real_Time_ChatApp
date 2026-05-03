@@ -19,8 +19,15 @@ const server = http.createServer(app);
 
 // Dynamic CORS configuration allowing production frontend and local development
 const corsOrigins = process.env.CORS_ORIGIN 
-  ? process.env.CORS_ORIGIN.split(',') 
+  ? process.env.CORS_ORIGIN.split(',').map(o => o.trim())
   : ["http://localhost:5173", "http://127.0.0.1:5173"];
+
+// DEBUG: Log CORS matching in Render console
+app.use((req, res, next) => {
+  console.log(`[CORS DEBUG] Request Origin: ${req.headers.origin}`);
+  console.log(`[CORS DEBUG] Permitted Origins: ${JSON.stringify(corsOrigins)}`);
+  next();
+});
 
 app.use(cors({
   origin: corsOrigins,
