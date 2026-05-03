@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MessageSquare, Shield, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
+import config from '../config';
 
 export default function LandingPage() {
   const [passkey, setPasskey] = useState('');
@@ -17,7 +18,7 @@ export default function LandingPage() {
     
     setIsCreating(true);
     try {
-      const response = await fetch('http://localhost:5000/api/rooms', {
+      const response = await fetch(`${config.API_URL}/api/rooms`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ passkey })

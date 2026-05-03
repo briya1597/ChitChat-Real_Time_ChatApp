@@ -3,6 +3,7 @@ import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import { LogOut, Send, Clock, Shield, MessageCircle, Zap, Lock, Unlock, Paperclip, User } from 'lucide-react';
 import { motion } from 'framer-motion';
+import config from '../config';
 
 const ImageBubble = ({ src }) => {
   const [loading, setLoading] = useState(true);
@@ -56,7 +57,7 @@ export default function ChatRoom() {
       return;
     }
 
-    const newSocket = io('http://localhost:5000');
+    const newSocket = io(config.SOCKET_URL);
     setSocket(newSocket);
     
     newSocket.on('connect', () => {
@@ -155,7 +156,7 @@ export default function ChatRoom() {
     formData.append('file', file);
 
     try {
-      const response = await fetch(`http://localhost:5000/api/rooms/${roomId}/upload`, {
+      const response = await fetch(`${config.API_URL}/api/rooms/${roomId}/upload`, {
         method: 'POST',
         headers: { 'x-room-id': roomId },
         body: formData
@@ -370,7 +371,7 @@ export default function ChatRoom() {
             let messageContent;
 
             if (msg.fileUrl) {
-              const fileSrc = `http://localhost:5000${msg.fileUrl}`;
+              const fileSrc = `${config.API_URL}${msg.fileUrl}`;
               if (msg.fileType?.startsWith('image/')) {
                 messageContent = <img src={fileSrc} alt="Uploaded attachment" className="rounded-xl shadow-md w-full max-w-[320px] object-cover bg-black/20" loading="lazy" />;
               } else if (msg.fileType?.startsWith('video/')) {

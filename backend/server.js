@@ -15,7 +15,19 @@ const Message = require('./models/Message');
 dotenv.config();
 
 const app = express();
-app.use(cors());
+const server = http.createServer(app);
+
+// Dynamic CORS configuration allowing production frontend and local development
+const corsOrigins = process.env.CORS_ORIGIN 
+  ? process.env.CORS_ORIGIN.split(',') 
+  : ["http://localhost:5173", "http://127.0.0.1:5173"];
+
+app.use(cors({
+  origin: corsOrigins,
+  methods: ["GET", "POST"],
+  credentials: true
+}));
+
 app.use(express.json());
 
 // Expose the temporary uploads directory statically to serve rich media natively
@@ -25,12 +37,11 @@ if (!fs.existsSync(uploadsDir)) {
 }
 app.use('/uploads', express.static(uploadsDir));
 
-const server = http.createServer(app);
-
 const io = new Server(server, {
   cors: {
-    origin: '*',
-    methods: ['GET', 'POST']
+    origin: corsOrigins,
+    methods: ["GET", "POST"],
+    credentials: true
   }
 });
 
@@ -237,5 +248,5 @@ app.get('/', (req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });

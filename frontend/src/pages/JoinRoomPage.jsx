@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Shield, Key, User } from 'lucide-react';
+import config from '../config';
 
 export default function JoinRoomPage() {
   const { roomId } = useParams();
@@ -23,7 +24,7 @@ export default function JoinRoomPage() {
     try {
       const creatorSessionId = localStorage.getItem(`creator_${roomId}`);
 
-      const response = await fetch('http://localhost:5000/api/rooms/verify', {
+      const response = await fetch(`${config.API_URL}/api/rooms/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ roomId, passkey, creatorSessionId })
