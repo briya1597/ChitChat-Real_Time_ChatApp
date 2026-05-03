@@ -14,6 +14,14 @@ const roomSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  isLocked: {
+    type: Boolean,
+    default: false
+  },
+  creatorSessionId: {
+    type: String,
+    required: true
+  },
   expiresAt: {
     type: Date,
     default: null

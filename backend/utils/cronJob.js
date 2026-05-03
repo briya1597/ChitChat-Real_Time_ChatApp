@@ -13,8 +13,15 @@ const startCleanupJob = () => {
       });
 
       for (const room of expiredRooms) {
+        // Purge messages and folder payloads permanently
         await Message.deleteMany({ roomId: room.roomId });
         await Room.deleteOne({ _id: room._id });
+        
+        // Remove uploaded files statically to conserve OS node cache limitations asynchronously
+        const uploadDir = path.join(__dirname, '..', 'uploads', room.roomId);
+        if (fs.existsSync(uploadDir)) {
+          fs.rmSync(uploadDir, { recursive: true, force: true });
+        }
         console.log(`Cleaned up expired room: ${room.roomId}`);
       }
     } catch (err) {

@@ -21,10 +21,12 @@ export default function JoinRoomPage() {
     setError(null);
 
     try {
+      const creatorSessionId = localStorage.getItem(`creator_${roomId}`);
+
       const response = await fetch('http://localhost:5000/api/rooms/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ roomId, passkey })
+        body: JSON.stringify({ roomId, passkey, creatorSessionId })
       });
       const data = await response.json();
       
